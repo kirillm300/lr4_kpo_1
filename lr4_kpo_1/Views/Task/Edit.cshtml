@@ -1,7 +1,8 @@
 ﻿@model lr4_kpo_1.Models.Task
-<h2>Создать задание</h2>
+<h2>Редактировать задание</h2>
 <form asp-action="Edit">
     <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id" />
     <div>
         <label asp-for="Title"></label>
         <input asp-for="Title" />
@@ -13,9 +14,19 @@
         <span asp-validation-for="Description"></span>
     </div>
     <div>
+        <label asp-for="Deadline"></label>
+        <input asp-for="Deadline" type="date" />
+        <span asp-validation-for="Deadline"></span>
+    </div>
+    <div>
+        <label asp-for="Status"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<lr4_kpo_1.Models.TaskStatus>()"></select>
+        <span asp-validation-for="Status"></span>
+    </div>
+    <div>
         <label asp-for="CourseId">Курс</label>
         <select asp-for="CourseId" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Name"))"></select>
         <span asp-validation-for="CourseId"></span>
     </div>
-    <button type="submit">Создать</button>
+    <button type="submit">Сохранить</button>
 </form>

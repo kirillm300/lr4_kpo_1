@@ -1,37 +1,68 @@
-﻿using lr4_kpo_1.Models;
+﻿using lr4_kpo_1.Data;
+using Microsoft.EntityFrameworkCore;
+using lr4_kpo_1.Models;
+using System.Collections.Generic;
+using System.Linq;
 using Task = lr4_kpo_1.Models.Task;
 
 namespace lr4_kpo_1.Repositories
 {
     public class TaskRepository
     {
-        private List<Task> _tasks = new List<Task>();
+        private readonly StudyTrackerContext _context;
 
-        public List<Task> GetTasks() => _tasks;
+        public TaskRepository(StudyTrackerContext context)
+        {
+            _context = context;
+        }
+
+        public List<Task> GetTasks()
+        {
+            return _context.Tasks.Include(t => t.Course).ToList();
+        }
 
         public void AddTask(Task task)
         {
-            task.Id = _tasks.Any() ? _tasks.Max(t => t.Id) + 1 : 1;
-            _tasks.Add(task);
+            _context.Tasks.Add(task);
+            _context.SaveChanges();
         }
 
         public void UpdateTask(Task task)
         {
-            var existing = _tasks.FirstOrDefault(t => t.Id == task.Id);
-            if (existing != null)
+            _context.Tasks.Update(task);
+            _context.SaveChanges();
+        }
+
+        public Task GetTaskById(int id)
+        {
+            return _context.Tasks
+                .Include(t => t.Course) // Загружаем связанный курс
+                .FirstOrDefault(t => t.Id == id);
+        }
+
+        public void DeleteTask(int id)
+        {
+            var task = _context.Tasks.Find(id);
+            if (task != null)
             {
-                existing.Title = task.Title;
-                existing.Description = task.Description;
-                existing.CourseId = task.CourseId;
+                _context.Tasks.Remove(task);
+                _context.SaveChanges();
             }
         }
 
         public void RemoveTask(int id)
         {
-            var task = _tasks.FirstOrDefault(t => t.Id == id);
-            if (task != null) _tasks.Remove(task);
+            var task = _context.Tasks.Find(id);
+            if (task != null)
+            {
+                _context.Tasks.Remove(task);
+                _context.SaveChanges();
+            }
         }
 
-        public Task GetTask(int id) => _tasks.FirstOrDefault(t => t.Id == id);
+        public Task GetTask(int id)
+        {
+            return _context.Tasks.Include(t => t.Course).FirstOrDefault(t => t.Id == id);
+        }
     }
 }

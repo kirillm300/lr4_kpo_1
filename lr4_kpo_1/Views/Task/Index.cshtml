@@ -5,6 +5,8 @@
     <tr>
         <th>Название</th>
         <th>Описание</th>
+        <th>Статус</th>
+        <th>Дедлайн</th>
         <th>Курс</th>
         <th></th>
     </tr>
@@ -13,6 +15,8 @@
         <tr>
             <td>@task.Title</td>
             <td>@task.Description</td>
+            <td>@task.Status</td>
+            <td>@task.Deadline</td>
             <td>@task.CourseId</td>
             <td>
                 <a asp-action="Edit" asp-route-id="@task.Id">Редактировать</a> |

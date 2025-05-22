@@ -1,52 +1,50 @@
-﻿using lr4_kpo_1.Models;
+﻿using lr4_kpo_1.Data;
+using lr4_kpo_1.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace lr4_kpo_1.Repositories
 {
     public class CourseRepository
     {
-        private static List<Course> _courses;
-        public CourseRepository()
-        {
-            SetDefaultCourses();
-        }
+        private readonly StudyTrackerContext _context;
 
-        public static void SetDefaultCourses()
+        public CourseRepository(StudyTrackerContext context)
         {
-            var course1 = new Course(id: 1, "Math", "some description", "Ivanov");
-            var course2 = new Course(id: 2, "History", "world history", "Petrov");
-            var course3 = new Course(id: 3, "Computer Science", description: null, "Sidorov");
-
-            _courses = [course1, course2, course3];
+            _context = context;
         }
 
         public List<Course> GetCourses()
         {
-            return _courses;
+            return _context.Courses.ToList();
         }
 
         public void AddCourse(Course course)
         {
-            course.Id = _courses.Any() ? _courses.Max(c => c.Id) + 1 : 1; // Простая генерация ID
-            _courses.Add(course);
+            _context.Courses.Add(course);
+            _context.SaveChanges();
         }
 
         public void UpdateCourse(Course course)
         {
-            var existing = _courses.FirstOrDefault(c => c.Id == course.Id);
-            if (existing != null)
-            {
-                existing.Name = course.Name;
-                existing.Description = course.Description;
-                existing.ProfessorName = course.ProfessorName;
-            }
+            _context.Courses.Update(course);
+            _context.SaveChanges();
         }
 
         public void RemoveCourse(int id)
         {
-            var course = _courses.Single(c => c.Id == id);
-            _courses.Remove(course);
+            var course = _context.Courses.Find(id);
+            if (course != null)
+            {
+                _context.Courses.Remove(course);
+                _context.SaveChanges();
+            }
         }
 
-        public Course GetCourse(int id) => _courses.FirstOrDefault(c => c.Id == id);
+        public Course GetCourse(int id)
+        {
+            return _context.Courses.Find(id);
+        }
     }
 }

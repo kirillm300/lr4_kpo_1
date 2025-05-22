@@ -1,20 +1,22 @@
-﻿namespace lr4_kpo_1.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+
+namespace lr4_kpo_1.Models
 {
     public class Course
     {
+        [Key]
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "Название курса обязательно")]
         public string Name { get; set; }
+
         public string? Description { get; set; }
+
+        [Required(ErrorMessage = "Укажите имя преподавателя")]
         public string ProfessorName { get; set; }
 
-        public Course() { }
-
-        public Course(int id, string name, string? description, string professorName)
-        {
-            this.Id = id;
-            this.Name = name;
-            this.Description = description;
-            this.ProfessorName = professorName;
-        }
+        // Навигационное свойство для заданий
+        public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
     }
 }

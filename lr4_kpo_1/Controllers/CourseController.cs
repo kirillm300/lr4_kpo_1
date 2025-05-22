@@ -29,19 +29,29 @@ namespace lr4_kpo_1.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Course course)
         {
-            if (ModelState.IsValid)
+            System.Diagnostics.Debug.WriteLine("Course Create POST called");
+            if (!ModelState.IsValid)
             {
-                try
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                System.Diagnostics.Debug.WriteLine("Validation errors: " + string.Join(", ", errors));
+                foreach (var error in errors)
                 {
-                    _courseService.AddCourse(course);
-                    return RedirectToAction(nameof(Index));
+                    ModelState.AddModelError("", error); // Добавляем ошибки в ModelState для отображения
                 }
-                catch (Exception)
-                {
-                    ModelState.AddModelError("", "Ошибка при добавлении курса.");
-                }
+                return View(course);
             }
-            return View(course);
+            try
+            {
+                _courseService.AddCourse(course);
+                System.Diagnostics.Debug.WriteLine("Course added successfully");
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
+                ModelState.AddModelError("", $"Ошибка при добавлении курса: {ex.Message}");
+                return View(course);
+            }
         }
 
         public IActionResult Edit(int id)

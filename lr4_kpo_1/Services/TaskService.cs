@@ -1,5 +1,6 @@
 ﻿using lr4_kpo_1.Models;
 using lr4_kpo_1.Repositories;
+using System.Collections.Generic;
 using Task = lr4_kpo_1.Models.Task;
 
 namespace lr4_kpo_1.Services
@@ -11,6 +12,16 @@ namespace lr4_kpo_1.Services
         public TaskService(TaskRepository repository)
         {
             _repository = repository;
+        }
+
+        public Task GetTaskById(int id)
+        {
+            return _repository.GetTaskById(id);
+        }
+
+        public void DeleteTask(int id)
+        {
+            _repository.DeleteTask(id);
         }
 
         public List<Task> GetTasks() => _repository.GetTasks();
