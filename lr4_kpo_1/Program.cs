@@ -11,6 +11,9 @@ builder.Services.AddSingleton<CoursesVmBuilder>();
 
 builder.Services.AddSingleton<CourseService>();
 builder.Services.AddSingleton<CourseRepository>();
+builder.Services.AddSingleton<CourseService>();
+builder.Services.AddSingleton<TaskRepository>();
+builder.Services.AddSingleton<TaskService>();
 
 var app = builder.Build();
 

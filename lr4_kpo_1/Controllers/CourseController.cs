@@ -1,96 +1,96 @@
-﻿using lr4_kpo_1.Services;
-using lr4_kpo_1.ViewModelBuilders;
-using Microsoft.AspNetCore.Http;
+﻿using lr4_kpo_1.Models;
+using lr4_kpo_1.Services;
+using lr4_kpo_1.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace lr4_kpo_1.Controllers
 {
     public class CourseController : Controller
     {
-        private readonly CoursesVmBuilder _coursesVmBuilder;
         private readonly CourseService _courseService;
 
-        public CourseController(CourseService courseService
-            , CoursesVmBuilder coursesVmBuilder)
+        public CourseController(CourseService courseService)
         {
-            _coursesVmBuilder = coursesVmBuilder;
             _courseService = courseService;
         }
 
-        // GET: CourseController
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            var coursesVm = _coursesVmBuilder.GetCoursesVm();
-            return View(coursesVm);
+            var courses = _courseService.GetCourses();
+            return View(new CoursesVm(courses));
         }
 
-        // GET: CourseController/Details/5
-        public ActionResult Details(int id)
+        public IActionResult Create()
         {
             return View();
         }
 
-        // GET: CourseController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: CourseController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public IActionResult Create(Course course)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _courseService.AddCourse(course);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Ошибка при добавлении курса.");
+                }
+            }
+            return View(course);
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var course = _courseService.GetCourse(id);
+            if (course == null) return NotFound();
+            return View(course);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Course course)
+        {
+            if (id != course.Id) return BadRequest();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _courseService.UpdateCourse(course);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Ошибка при редактировании курса.");
+                }
+            }
+            return View(course);
+        }
+
+        public IActionResult Delete(int id)
+        {
+            var course = _courseService.GetCourse(id);
+            if (course == null) return NotFound();
+            return View(course);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
         {
             try
             {
+                _courseService.RemoveCourse(id);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception)
             {
-                return View();
-            }
-        }
-
-        // GET: CourseController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: CourseController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: CourseController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            _courseService.RemoveCourse(id);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // POST: CourseController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                ModelState.AddModelError("", "Ошибка при удалении курса.");
+                return View(_courseService.GetCourse(id));
             }
         }
     }

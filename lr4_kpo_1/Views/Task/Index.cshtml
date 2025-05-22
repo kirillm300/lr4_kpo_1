@@ -1,0 +1,23 @@
+﻿@model IEnumerable<lr4_kpo_1.Models.Task>
+<h2>Задания</h2>
+<p><a asp-action="Create">Добавить задание</a></p>
+<table border="1">
+    <tr>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Курс</th>
+        <th></th>
+    </tr>
+    @foreach (var task in Model)
+    {
+        <tr>
+            <td>@task.Title</td>
+            <td>@task.Description</td>
+            <td>@task.CourseId</td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@task.Id">Редактировать</a> |
+                <a asp-action="Delete" asp-route-id="@task.Id">Удалить</a>
+            </td>
+        </tr>
+    }
+</table>

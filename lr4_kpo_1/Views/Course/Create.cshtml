@@ -1,0 +1,21 @@
+﻿@model lr4_kpo_1.Models.Course
+<h2>Создать курс</h2>
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Description"></label>
+        <input asp-for="Description" />
+        <span asp-validation-for="Description"></span>
+    </div>
+    <div>
+        <label asp-for="ProfessorName"></label>
+        <input asp-for="ProfessorName" />
+        <span asp-validation-for="ProfessorName"></span>
+    </div>
+    <button type="submit">Создать</button>
+</form>

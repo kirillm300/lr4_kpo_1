@@ -7,6 +7,8 @@
         public string? Description { get; set; }
         public string ProfessorName { get; set; }
 
+        public Course() { }
+
         public Course(int id, string name, string? description, string professorName)
         {
             this.Id = id;

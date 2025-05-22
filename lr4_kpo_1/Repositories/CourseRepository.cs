@@ -26,7 +26,19 @@ namespace lr4_kpo_1.Repositories
 
         public void AddCourse(Course course)
         {
+            course.Id = _courses.Any() ? _courses.Max(c => c.Id) + 1 : 1; // Простая генерация ID
             _courses.Add(course);
+        }
+
+        public void UpdateCourse(Course course)
+        {
+            var existing = _courses.FirstOrDefault(c => c.Id == course.Id);
+            if (existing != null)
+            {
+                existing.Name = course.Name;
+                existing.Description = course.Description;
+                existing.ProfessorName = course.ProfessorName;
+            }
         }
 
         public void RemoveCourse(int id)
@@ -34,5 +46,7 @@ namespace lr4_kpo_1.Repositories
             var course = _courses.Single(c => c.Id == id);
             _courses.Remove(course);
         }
+
+        public Course GetCourse(int id) => _courses.FirstOrDefault(c => c.Id == id);
     }
 }

@@ -22,10 +22,14 @@ namespace lr4_kpo_1.Services
             _repository.AddCourse(course);
         }
 
+        public void UpdateCourse(Course course) => _repository.UpdateCourse(course);
+
         public void RemoveCourse(int id)
         {
             _repository.RemoveCourse(id);
         }
+
+        public Course GetCourse(int id) => _repository.GetCourse(id);
     }
 
 }
