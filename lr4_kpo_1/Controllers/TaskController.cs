@@ -4,6 +4,8 @@ using lr4_kpo_1.Models;
 using lr4_kpo_1.Services;
 using System;
 using Task = lr4_kpo_1.Models.Task;
+using TaskStatus = lr4_kpo_1.Models.TaskStatus;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace lr4_kpo_1.Controllers
 {
@@ -18,9 +20,69 @@ namespace lr4_kpo_1.Controllers
             _courseService = courseService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(TaskStatus? status = null, SortOrder sortOrder = SortOrder.None)
         {
-            return View(_taskService.GetTasks());
+            System.Diagnostics.Debug.WriteLine($"Task Index called with status: {status}, sortOrder: {sortOrder}");
+            var tasks = _taskService.GetTasks() ?? new List<Task>();
+
+            // Фильтрация по статусу
+            if (status.HasValue)
+            {
+                tasks = tasks.Where(t => t.Status == status.Value).ToList();
+            }
+
+            // Сортировка по дедлайну
+            switch (sortOrder)
+            {
+                case SortOrder.DeadlineAsc:
+                    tasks = tasks.OrderBy(t => t.Deadline).ToList();
+                    break;
+                case SortOrder.DeadlineDesc:
+                    tasks = tasks.OrderByDescending(t => t.Deadline).ToList();
+                    break;
+                case SortOrder.None:
+                default:
+                    // Без сортировки, сохраняем порядок из базы данных
+                    break;
+            }
+
+            var viewModel = new TaskIndexViewModel
+            {
+                Tasks = tasks,
+                SelectedStatus = status,
+                SelectedSortOrder = sortOrder
+            };
+
+            // Подготовка SelectList для статусов
+            var statusList = Enum.GetValues(typeof(TaskStatus))
+                .Cast<TaskStatus>()
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ToString(),
+                    Text = s.ToString()
+                })
+                .ToList();
+            statusList.Insert(0, new SelectListItem { Value = "", Text = "Все" });
+            ViewBag.StatusList = new SelectList(statusList, "Value", "Text", status?.ToString());
+
+            // Подготовка SelectList для сортировки
+            var sortOrderList = Enum.GetValues(typeof(SortOrder))
+                .Cast<SortOrder>()
+                .Select(s => new SelectListItem
+                {
+                    Value = s.ToString(),
+                    Text = s switch
+                    {
+                        SortOrder.None => "Без сортировки",
+                        SortOrder.DeadlineAsc => "По возрастанию дедлайна",
+                        SortOrder.DeadlineDesc => "По убыванию дедлайна",
+                        _ => s.ToString()
+                    }
+                })
+                .ToList();
+            ViewBag.SortOrderList = new SelectList(sortOrderList, "Value", "Text", sortOrder.ToString());
+
+            return View(viewModel);
         }
 
         public IActionResult Create()
