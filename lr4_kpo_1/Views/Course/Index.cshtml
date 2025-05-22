@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@using lr4_kpo_1.ViewModels
+@using lr4_kpo_1.Controllers
+@model CoursesVm
+
+<div class="text-center">
+    <h1 class="display-4">Courses</h1>
+</div>
+<p>@Html.ActionLink("Add new", nameof(CourseController.Create))</p>
+<table border="1">
+    <tr>
+        <th>Course</th>
+        <th>Description</th>
+        <th>Professor</th>
+        <th></th>
+        <th></th>
+    </tr>
+    @foreach (var course in Model.Courses)
+    {
+        <tr>
+            <td>@course.Name</td>
+            <td>@course.Description</td>
+            <td>@course.ProfessorName</td>
+            <td>@Html.ActionLink("Edit", nameof(CourseController.Edit), new { id = course.Id })</td>
+            <td>@Html.ActionLink("Delete", nameof(CourseController.Delete), new { id = course.Id })</td>
+        </tr>
+    }
+</table>
